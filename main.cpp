@@ -154,6 +154,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				ball.acceleration.y = -0.8f;
 		}*/
 
+
+
 		if (boxlefttop.x < rightbottom.x && lefttop.x < boxrightbottom.x) {
 			 if (boxlefttop.y < rightbottom.y && lefttop.y < boxrightbottom.y) {
 				JumpCount = +1;
