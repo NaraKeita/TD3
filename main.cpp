@@ -159,6 +159,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			}
 		}
 
+		if (PlayerLeftBottom.y<=100){
+			isJump = false;
+		}
+
 		/*
 		if (PlayerLeftBottom.y >= s) {
 			isJump = 1;
@@ -253,6 +257,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		
 		//ライン
 		Novice::DrawLine(2000, (int)ScreenY, 0, 500, WHITE);
+
+		Novice::ScreenPrintf(32, 32, "player.pos.x=%.1f", PlayerLeftBottom.y);
 
 		///
 		/// ↑描画処理ここまで
