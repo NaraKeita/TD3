@@ -2,29 +2,28 @@
 
 const char kWindowTitle[] = "LC1D_20_ナラ_ケイタ";
 
-//自機
 struct Vector2 {
 	float x;
 	float y;
 };
 
+//プレイヤー
 struct Ball {
-	Vector2 position;
+	Vector2 pos;
 	Vector2 velocity;
 	Vector2 acceleration;
 	float radius;
 	unsigned int color;
 };
 
+//ボックス
 struct Box {
-	Vector2 position;
+	Vector2 pos;
 	Vector2 velocty;
 	Vector2 acceleration;
 	float rad;
 	unsigned int color;
 };
-
-
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
@@ -32,18 +31,25 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// ライブラリの初期化
 	Novice::Initialize(kWindowTitle, 1280, 720);
 
-	// キー入力結果を受け取る箱
+	// キー入力結果を受け取るボックス
 	char keys[256] = { 0 };
 	char preKeys[256] = { 0 };
 
-	//矩形の幅と高さ
-	float w = 100.0f;
-	float h = 100.0f;
+	//プレイヤーの矩形の幅と高さ
+	float Pw = 100.0f;
+	float Ph = 100.0f;
 
-	int speed = 8;
+	//ブロックの矩形の幅と高さ
+	float Bw = 200.0f;
+	float Bh = 100.0f;
 
+	//プレイヤーのスピード
+	int Speed = 8;
+
+	//スクリーン
 	float s = 0;
 
+	//プレイヤー
 	Ball ball = {
 	{600.0f,400.0f},
 	{0.0f,0.0f},
@@ -52,28 +58,31 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	WHITE
 	};
 
+	//ボックス
 	Box box = {
-	{700.0f,100.0f},
+	{800.0f,200.0f},
 	{0.0f,0.0f},
 	{0.0f,-0.8f},
 	100.0f,
 	WHITE
 	};
 
-	Vector2 lefttop = { ball.position.x - w / 2.0f,ball.position.y - h / 2.0f };
-	Vector2 righttop = { ball.position.x + w / 2.0f,ball.position.y - h / 2.0f };
-	Vector2 leftbottom = { ball.position.x - w / 2.0f,ball.position.y + h / 2.0f };
-	Vector2 rightbottom = { ball.position.x + w / 2.0f,ball.position.y + h / 2.0f };
+	//プレイヤーの矩形
+	Vector2 PlayerLeftTop = { ball.pos.x - Pw / 2.0f,ball.pos.y - Ph / 2.0f };
+	Vector2 PlayerRightTop = { ball.pos.x + Pw / 2.0f,ball.pos.y - Ph / 2.0f };
+	Vector2 PlayerLeftBottom = { ball.pos.x - Pw / 2.0f,ball.pos.y + Ph / 2.0f };
+	Vector2 PlayerRightBottom = { ball.pos.x + Pw / 2.0f,ball.pos.y + Ph / 2.0f };
 
-	Vector2 boxlefttop = { box.position.x - w / 2.0f,box.position.y - h / 2.0f };
-	Vector2 boxrighttop = { box.position.x + w / 2.0f,box.position.y - h / 2.0f };
-	Vector2 boxleftbottom = { box.position.x - w / 2.0f,box.position.y + h / 2.0f };
-	Vector2 boxrightbottom = { box.position.x + w / 2.0f,box.position.y + h / 2.0f };
+	//ボックスの矩形
+	Vector2 BoxLeftTop = { box.pos.x - Bw / 2.0f,box.pos.y - Bh / 2.0f };
+	Vector2 BoxRightTop = { box.pos.x + Bw / 2.0f,box.pos.y - Bh / 2.0f };
+	Vector2 BoxLeftBottom = { box.pos.x - Bw / 2.0f,box.pos.y + Bh / 2.0f };
+	Vector2 BoxRightBottom = { box.pos.x + Bw / 2.0f,box.pos.y + Bh / 2.0f };
 
 	int WhiteGh = Novice::LoadTexture("./white1x1.png");
 
 	//ジャンプカウント
-	int JumpCount = 1;
+	int isJump = false;
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -89,89 +98,74 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		///
 
 		if (keys[DIK_A]) {
-			ball.position.x -= speed;
+			ball.pos.x -= Speed;
 		}
 		
 		if (keys[DIK_D]) {
-			ball.position.x += speed;
+			ball.pos.x += Speed;
 		}
 		
 
-		/*---------------
-		   箱の当たり判定
-		  ---------------*/
+		/*----------------------
+		   ボックスの当たり判定
+		  ---------------------*/
 
-		lefttop = { ball.position.x - w / 2.0f,ball.position.y - h / 2.0f };
-		righttop = { ball.position.x + w / 2.0f,ball.position.y - h / 2.0f };
-		leftbottom = { ball.position.x - w / 2.0f,ball.position.y + h / 2.0f };
-		rightbottom = { ball.position.x + w / 2.0f,ball.position.y + h / 2.0f };
+		//プレイヤー
+		PlayerLeftTop = { ball.pos.x - Pw / 2.0f,ball.pos.y - Ph / 2.0f };
+		PlayerRightTop = { ball.pos.x + Pw / 2.0f,ball.pos.y - Ph / 2.0f };
+		PlayerLeftBottom = { ball.pos.x - Pw / 2.0f,ball.pos.y + Ph / 2.0f };
+		PlayerRightBottom = { ball.pos.x + Pw / 2.0f,ball.pos.y + Ph / 2.0f };
 
-
-
-		boxlefttop = { box.position.x - w / 2.0f,box.position.y - h / 2.0f };
-		boxrighttop = { box.position.x + w / 2.0f,box.position.y - h / 2.0f };
-		boxleftbottom = { box.position.x - w / 2.0f,box.position.y + h / 2.0f };
-		boxrightbottom = { box.position.x + w / 2.0f,box.position.y + h / 2.0f };
+		//ボックス
+		BoxLeftTop = { box.pos.x - Bw / 2.0f,box.pos.y - Bh / 2.0f };
+		BoxRightTop = { box.pos.x + Bw / 2.0f,box.pos.y - Bh / 2.0f };
+		BoxLeftBottom = { box.pos.x - Bw / 2.0f,box.pos.y + Bh / 2.0f };
+		BoxRightBottom = { box.pos.x + Bw / 2.0f,box.pos.y + Bh / 2.0f };
 
 
         //================＼
-		//    ジャンプ     ｜
+		//    ジャンプ      >
 	    //================／
 
-		if (keys[DIK_W] != 0 && ball.position.y == ball.radius  && JumpCount == 0) {
-			JumpCount = -1;
-			ball.velocity.y = 18.0f;
+		if (keys[DIK_W] != 0 && ball.pos.y == ball.radius  && isJump == 0) {
+			isJump = true;
+			ball.velocity.y = 30.0f;
 		}
 
 		ball.velocity.x += ball.acceleration.x;//速度 += 
 		ball.velocity.y += ball.acceleration.y;
 
-		ball.position.x += ball.velocity.x;
-		ball.position.y += ball.velocity.y;
+		ball.pos.x += ball.velocity.x;
+		ball.pos.y += ball.velocity.y;
 
-		if (ball.position.y <= ball.radius) {
-			ball.position.y = ball.radius;
+		if (ball.pos.y <= ball.radius) {
+			ball.pos.y = ball.radius;
 		}
+		
 
-		/*---------------------
-		   箱の上にいくとのれる
-		  ---------------------*/
-		/*if (boxlefttop.y <= lefttop.y) {
-			ball.velocity.y -= ball.acceleration.y;
-			ball.position.y -= ball.velocity.y;
-			
-			if (ball.position.y <= ball.radius) {
-				ball.position.y = ball.radius;
+		  /*ブロックの上に乗る*/
+		//////////////////////////
+		//                      //
+		//    ^     ら     ^    //
+		//                      //
+		//////////////////////////
+
+		if (BoxLeftTop.x < PlayerRightBottom.x && PlayerLeftBottom.x < BoxRightTop.x) {
+			if (PlayerLeftTop.y < BoxRightBottom.y && PlayerLeftBottom.y < BoxRightTop.y) {
+				
+				ball.velocity.y = -30.0f;
+				//ball.acceleration.y = -10.0f;//プレイヤーが地面に落ちるスピード	
+				isJump = false;
 			}
-		}*/
-		
-
-		//当たり判定
-		/*if (boxlefttop.x > rightbottom.x && lefttop.x > boxrightbottom.x) {
-			if (boxlefttop.y > rightbottom.y && lefttop.y > boxrightbottom.y) {
-				JumpCount = true;
-				ball.velocity.y = 0;
-				ball.acceleration.y = -0.8f;
-		}*/
-
-
-
-		if (boxlefttop.x < rightbottom.x && lefttop.x < boxrightbottom.x) {
-			 if (boxlefttop.y < rightbottom.y && lefttop.y < boxrightbottom.y) {
-				JumpCount = +1;
-				ball.velocity.y = 0;
-				ball.acceleration.y = 0.0f;
-			 }
-		}else{
-			ball.velocity.y = 0;
-			ball.acceleration.y = -0.8f;
 		}
-		
-		if (lefttop.y <= s) {
-			JumpCount = 1;
+
+		/*
+		if (PlayerLeftBottom.y >= s) {
+			isJump = 1;
+			
 			ball.velocity.y = 0;
-			ball.acceleration.y = -0.8f;
-		}
+			ball.acceleration.y = -100.0f;//プレイヤーの飛躍力
+		}*/
 		
 
 		///
@@ -182,77 +176,83 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓描画処理ここから
 		///
 		
-		//自機のスクリーン//
-		float screen = ball.position.y;
-		screen += -500;
-		screen *= -1;
+		//プレイヤーのスクリーン//
+		float Screen = ball.pos.y;
+		Screen += -500;
+		Screen *= -1;
 
 		// ==左上のスクリーン== //
-		float screenlefttop = lefttop.y;
-		screenlefttop += -500;
-		screenlefttop *= -1;
+		float ScreenLeftTop = PlayerLeftTop.y;
+		ScreenLeftTop += -500;
+		ScreenLeftTop *= -1;
 
 		// ==右上のスクリーン== //
-		float screenrighttop = righttop.y;
-		screenrighttop += -500;
-		screenrighttop *= -1;
+		float ScreenRightTop = PlayerRightTop.y;
+		ScreenRightTop += -500;
+		ScreenRightTop *= -1;
 
 		// ==左下のスクリーン== //
-		float screenleftbottom = leftbottom.y;
-		screenleftbottom += -500;
-		screenleftbottom *= -1;
+		float ScreenLeftBottom = PlayerLeftBottom.y;
+		ScreenLeftBottom += -500;
+		ScreenLeftBottom *= -1;
 
 		// ==右下のスクリーン== //
-		float screenrightbottom = rightbottom.y;
-		screenrightbottom += -500;
-		screenrightbottom *= -1;
+		float ScreenRightBottom = PlayerRightBottom.y;
+		ScreenRightBottom += -500;
+		ScreenRightBottom *= -1;
 
+	/*-----------------------------------------------------------------*/
 
-
-		//箱のスクリーン//
-		float boxscreenlefttop = boxlefttop.y;
-		boxscreenlefttop += -500;
-		boxscreenlefttop *= -1;
-
-		float boxscreenrighttop = boxrighttop.y;
-		boxscreenrighttop += -500;
-		boxscreenrighttop *= -1;
-
-		float boxscreenleftbottom = boxleftbottom.y;
-		boxscreenleftbottom += -500;
-		boxscreenleftbottom *= -1;
-
-		float boxscreenrightbottom = boxrightbottom.y;
-		boxscreenrightbottom += -500;
-		boxscreenrightbottom *= -1;
-
-
-		float Bs = box.position.y;
+		//ボックスのスクリーン//
+		float Bs = box.pos.y;
 		Bs += -500;
 		Bs *= -1;
 
+		// ==左上スクリーン== //
+		float BoxScreenLeftTop = BoxLeftTop.y;
+		BoxScreenLeftTop += -500;
+		BoxScreenLeftTop *= -1;
+
+		// ==右上のスクリーン== //
+		float BoxScreenRightTop = BoxRightTop.y;
+		BoxScreenRightTop += -500;
+		BoxScreenRightTop *= -1;
+
+		// ==左下のスクリーン== //
+		float BoxScreenLeftBottom = BoxLeftBottom.y;
+		BoxScreenLeftBottom += -500;
+		BoxScreenLeftBottom *= -1;
+
+		// ==右下のスクリーン== //
+		float BoxScreenRightBottom = BoxRightBottom.y;
+		BoxScreenRightBottom += -500;
+		BoxScreenRightBottom *= -1;
 
 		//線のスクリーン//
-		float screenY = s;
-		screenY += -500;
-		screenY *= -1;
+		float ScreenY = s;
+		ScreenY += -500;
+		ScreenY *= -1;
 
-		//自機
-		Novice::DrawQuad((int)lefttop.x, (int)screenlefttop,
-			(int)righttop.x, (int)screenrighttop,
-			(int)leftbottom.x, (int)screenleftbottom,
-			(int)rightbottom.x, (int)screenrightbottom,
-			0, 0, 1, 1, WhiteGh, (int)ball.color);
+	/*-------------------------------------------------------------------------------------------------*/
 
-		//箱
-		Novice::DrawQuad((int)boxlefttop.x, (int)boxscreenlefttop,
-			(int)boxrighttop.x, (int)boxscreenrighttop,
-			(int)boxleftbottom.x, (int)boxscreenleftbottom,
-			(int)boxrightbottom.x, (int)boxscreenrightbottom,
-			0, 0, 1, 1, WhiteGh, (int)ball.color);
+	    //プレイヤー
+		Novice::DrawQuad((int)PlayerLeftTop.x, (int)ScreenLeftTop,//左上
+							(int)PlayerRightTop.x, (int)ScreenRightTop,//右上
+								(int)PlayerLeftBottom.x, (int)ScreenLeftBottom,//左下
+									(int)PlayerRightBottom.x, (int)ScreenRightBottom,//右下
+										0, 0, 1, 1, WhiteGh, (int)ball.color);//白色
+
+	/*--------------------------------------------------------------------------------------------------*/
+	
+	    //ボックス
+		Novice::DrawQuad((int)BoxLeftTop.x, (int)BoxScreenLeftTop,//左上
+							(int)BoxRightTop.x, (int)BoxScreenRightTop,//右上
+								(int)BoxLeftBottom.x, (int)BoxScreenLeftBottom,//左下
+									(int)BoxRightBottom.x, (int)BoxScreenRightBottom,//右下
+										0, 0, 1, 1, WhiteGh, (int)ball.color);//白色
 		
 		//ライン
-		Novice::DrawLine(2000, (int)screenY, 0, 500, WHITE);
+		Novice::DrawLine(2000, (int)ScreenY, 0, 500, WHITE);
 
 		///
 		/// ↑描画処理ここまで
